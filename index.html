@@ -49,7 +49,7 @@
             justify-content: center; 
         }
 
-        /* شاشة الإدخال */
+
         .card {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(10px);
@@ -124,7 +124,7 @@
         }
         .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15, 52, 40, 0.28); }
 
-        /* شاشة عرض الكارت */
+        
         #result-view { display: none; width: 100%; animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
@@ -150,7 +150,7 @@
             border-radius: 24px;
         }
 
-        /* الإطار الداخلي الذهبي المزدوج الفخم الموحد */
+       
         .capture-area::before {
             content: ""; position: absolute;
             top: 14px; left: 14px; right: 14px; bottom: 14px;
@@ -162,7 +162,7 @@
             opacity: 0.85;
         }
 
-        /* أركان الكارت الكلاسيكية النحاسية الموحدة */
+       
         .card-corner {
             position: absolute; width: 28px; height: 28px;
             border: 2px solid var(--accent-dark); z-index: 2; pointer-events: none;
@@ -201,7 +201,7 @@
             width: 50%; border-top: 1px dashed rgba(150, 115, 51, 0.4);
         }
 
-        /* تنسيق القسم الخاص */
+       
         #special-section { margin-top: 24px; padding-top: 20px; width: 100%; z-index: 2; position: relative; }
         #special-section::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; border-top: 1px dashed rgba(197,160,89,0.4); }
         .sp-quote { font-family: 'Cairo', sans-serif; color: #4a5d55; font-weight: 500; font-size: 0.95rem; line-height: 1.7; text-align: center; white-space: nowrap; }
@@ -211,7 +211,7 @@
         .sp-date { display: block; font-size: 0.85rem; color: #7a8b82; margin-top: 4px; font-family: 'Cairo', sans-serif; font-weight: 600; text-align: center; }
         .first-date { margin-top: 15px; }
 
-        /* الأزرار السفلية التفاعلية */
+      
         .actions { display: flex; gap: 15px; max-width: 440px; margin: 0 auto; }
         .btn-action {
             flex: 1; padding: 15px; border: none; border-radius: 14px;
@@ -230,7 +230,7 @@
         
         .svg-icon { width: 18px; height: 18px; transition: transform 0.3s ease; display: inline-block; vertical-align: middle; }
 
-        /* شريط التنبيهات */
+      
         #toast {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(120px);
             background: #11221a; color: #fff; padding: 14px 32px; border-radius: 50px;
@@ -251,7 +251,7 @@
 
         .footer { position: static; margin-top: 30px; font-size: 0.8rem; color: #72887d; z-index: 10; font-weight: 600; text-align: center; width: 100%; letter-spacing: 0.8px; }
 
-        /* ========= تهيئة الموبايل الحالية ========= */
+       
         @media (max-width: 600px) {
             body { padding: 15px 10px; }
             .card { padding: 35px 20px; border-radius: 20px; }
@@ -266,7 +266,7 @@
             .capture-area { padding: 45px 22px; min-height: 420px; width: 100%; max-width: 385px; border-radius: 20px; }
             .capture-area::before { top: 10px; left: 10px; right: 10px; bottom: 10px; border-radius: 14px; }
             
-            /* تم إزالة المسافات بين الحروف لتفادي تقطع النص العربي في الموبايل */
+           
             .sp-quote { font-size: 0.84rem !important; white-space: nowrap !important; }
             
             .card-corner { width: 22px; height: 22px; }
