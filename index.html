@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EID Mubarak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #0f3428;
+            --primary-mid: #164032;
+            --primary-light: #1b4d3e;
+            --accent: #c5a059;
+            --accent-light: #dfc493;
+            --accent-dark: #967333;
+            --bg-gradient: radial-gradient(circle at center, #f7f9f6 0%, #e3e8e3 100%);
+            --card-marble: radial-gradient(circle at 30% 20%, #fdfcfb 0%, #f7f4ee 100%);
+            --text-dark: #11221a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { width: 100%; min-height: 100%; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 15px;
+            color: var(--text-dark);
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 520px; 
+            z-index: 10; 
+            margin: auto 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+        }
+
+        /* شاشة الإدخال */
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 45px 35px;
+            box-shadow: 0 20px 50px rgba(15, 52, 40, 0.06), 0 4px 12px rgba(0, 0, 0, 0.02);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        h1 { font-family: 'Amiri', serif; font-size: 2.6rem; color: var(--primary); margin-bottom: 8px; font-weight: 700; }
+        p.subtitle { font-size: 0.98rem; color: #5a6e63; margin-bottom: 35px; font-weight: 500; }
+
+        .input-group { margin-bottom: 24px; text-align: right; }
+        label { display: block; margin-bottom: 10px; font-weight: 700; font-size: 0.9rem; color: var(--primary); letter-spacing: 0.2px; }
+
+        input[type="text"] {
+            width: 100%; padding: 16px 18px;
+            border: 1.5px solid #d0dcd6; border-radius: 14px;
+            font-family: 'Cairo', sans-serif; font-size: 0.98rem;
+            transition: all 0.3s ease; outline: none; background: #fcfdfe; color: var(--text-dark);
+        }
+        input[type="text"]:focus {
+            border-color: var(--accent); background: #fff;
+            box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.12);
+        }
+
+        .photo-upload { margin-bottom: 35px; position: relative; }
+        .upload-label {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 35px; border: 1.5px dashed #b8c7bf; border-radius: 16px;
+            cursor: pointer; transition: all 0.3s ease;
+            background: rgba(243, 246, 244, 0.5);
+        }
+        .upload-label:hover { border-color: var(--accent); background: rgba(243, 246, 244, 0.9); transform: translateY(-1px); }
+        .upload-label .camera-icon { width: 36px; height: 36px; margin-bottom: 12px; color: #6d8477; transition: color 0.3s; }
+        .upload-label:hover .camera-icon { color: var(--accent); }
+        .upload-label span { font-size: 0.9rem; color: #5a6e63; font-weight: 600; }
+        #photo-input { display: none; }
+
+        .preview-container {
+            margin-top: 15px; position: relative; display: none;
+            width: 110px; height: 110px; margin-left: auto; margin-right: auto;
+        }
+        #photo-preview {
+            width: 100%; height: 100%; object-fit: cover;
+            border-radius: 16px; border: 4px solid #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+        .remove-photo {
+            position: absolute; top: -10px; right: -10px;
+            background: #222; color: #fff; border: none; border-radius: 50%;
+            width: 26px; height: 26px; cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: background 0.2s;
+        }
+        .remove-photo:hover { background: #e53e3e; }
+
+        .btn-generate {
+            width: 100%; padding: 16px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%);
+            color: #fff; font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(15, 52, 40, 0.2);
+            font-family: 'Cairo', sans-serif;
+        }
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15, 52, 40, 0.28); }
+
+        /* شاشة عرض الكارت */
+        #result-view { display: none; width: 100%; animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
+
+        .result-card {
+            background: transparent; padding: 10px 0;
+            position: relative; margin-bottom: 30px;
+        }
+
+        .capture-area {
+            padding: 55px 35px;
+            background: var(--card-marble);
+            position: relative;
+            min-height: 480px;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(197, 160, 89, 0.25);
+            box-shadow: 0 25px 60px rgba(15, 52, 40, 0.12);
+            border-radius: 24px;
+        }
+
+        /* الإطار الداخلي الذهبي المزدوج الفخم الموحد */
+        .capture-area::before {
+            content: ""; position: absolute;
+            top: 14px; left: 14px; right: 14px; bottom: 14px;
+            border: 1px solid var(--accent);
+            outline: 3px double var(--accent);
+            outline-offset: -6px;
+            border-radius: 16px;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        /* أركان الكارت الكلاسيكية النحاسية الموحدة */
+        .card-corner {
+            position: absolute; width: 28px; height: 28px;
+            border: 2px solid var(--accent-dark); z-index: 2; pointer-events: none;
+        }
+        .card-corner.top-left    { top: 22px; left: 22px; border-right: none; border-bottom: none; }
+        .card-corner.top-right   { top: 22px; right: 22px; border-left: none; border-bottom: none; }
+        .card-corner.bottom-left { bottom: 22px; left: 22px; border-right: none; border-top: none; }
+        .card-corner.bottom-right{ bottom: 22px; right: 22px; border-left: none; border-top: none; }
+
+        .photo-holder {
+            width: 115px; height: 115px; margin-bottom: 28px;
+            border-radius: 50%; border: 4px solid #fff;
+            box-shadow: 0 0 0 1.5px var(--accent), 0 12px 30px rgba(15, 52, 40, 0.15);
+            overflow: hidden; background: #fff; display: none; z-index: 2;
+        }
+        .photo-holder img { width: 100%; height: 100%; object-fit: cover; }
+
+        .res-title {
+            font-family: 'Amiri', serif; font-size: 2.3rem;
+            color: var(--primary); margin-bottom: 18px; z-index: 2;
+            text-align: center; line-height: 1.3; font-weight: 700;
+        }
+        .res-msg {
+            font-family: 'Amiri', serif; font-size: 1.3rem; line-height: 1.8;
+            color: #2c3e35; margin-bottom: 25px; z-index: 2; text-align: center;
+            max-width: 90%; font-weight: 400;
+        }
+        
+        .sender-tag {
+            margin-top: 15px; font-weight: 700; color: var(--accent-dark); z-index: 2;
+            font-size: 1rem; padding-top: 14px; min-width: 140px; text-align: center;
+            font-family: 'Cairo', sans-serif; position: relative;
+        }
+        .sender-tag::before {
+            content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 50%; border-top: 1px dashed rgba(150, 115, 51, 0.4);
+        }
+
+        /* تنسيق القسم الخاص */
+        #special-section { margin-top: 24px; padding-top: 20px; width: 100%; z-index: 2; position: relative; }
+        #special-section::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; border-top: 1px dashed rgba(197,160,89,0.4); }
+        .sp-quote { font-family: 'Cairo', sans-serif; color: #4a5d55; font-weight: 500; font-size: 0.95rem; line-height: 1.7; text-align: center; white-space: nowrap; }
+        .sp-small { display: flex; align-items: center; justify-content: center; font-size: 0.92rem; font-weight: 500; margin-top: 6px; font-family: 'Cairo', sans-serif; white-space: nowrap; line-height: 1.5; }
+        .featured-heart { display: inline-block; vertical-align: middle; font-size: 1.1rem; animation: pulse-heart 1.5s infinite ease-in-out; margin-right: 4px; }
+        @keyframes pulse-heart { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+        .sp-date { display: block; font-size: 0.85rem; color: #7a8b82; margin-top: 4px; font-family: 'Cairo', sans-serif; font-weight: 600; text-align: center; }
+        .first-date { margin-top: 15px; }
+
+        /* الأزرار السفلية التفاعلية */
+        .actions { display: flex; gap: 15px; max-width: 440px; margin: 0 auto; }
+        .btn-action {
+            flex: 1; padding: 15px; border: none; border-radius: 14px;
+            font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; font-size: 0.95rem; font-family: 'Cairo', sans-serif;
+        }
+        .btn-download { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%); color: #fff; box-shadow: 0 8px 20px rgba(15, 52, 40, 0.15); }
+        .btn-reset    { background: #fff; color: #475569; border: 1px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        
+        .btn-action:hover { opacity: 0.95; transform: translateY(-2px); }
+        .btn-download:hover { box-shadow: 0 12px 25px rgba(15, 52, 40, 0.25); }
+        .btn-download:hover .svg-icon { transform: translateY(2px); }
+        .btn-reset:hover { background: #f8fafc; color: #1e293b; border-color: #94a3b8; }
+        .btn-reset:hover .svg-icon { transform: rotate(-45deg); }
+        
+        .svg-icon { width: 18px; height: 18px; transition: transform 0.3s ease; display: inline-block; vertical-align: middle; }
+
+        /* شريط التنبيهات */
+        #toast {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(120px);
+            background: #11221a; color: #fff; padding: 14px 32px; border-radius: 50px;
+            font-size: 0.92rem; z-index: 10000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(15,52,40,0.25); font-weight: 600;
+            display: flex; align-items: center; gap: 10px; border: 1px solid rgba(197,160,89,0.2);
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+        .toast-star { color: var(--accent); font-size: 1rem; }
+
+        .spinner { width: 16px; height: 16px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #balloons-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .balloon { position: absolute; width: 35px; height: 45px; border-radius: 50% 50% 50% 0; pointer-events: none; animation: float-up 4.5s ease-in forwards; opacity: 0; bottom: -100px; }
+        .balloon::after { content: ''; position: absolute; bottom: -18px; left: 50%; width: 1px; height: 18px; background: rgba(0,0,0,0.15); transform: translateX(-50%); }
+        @keyframes float-up { 0% { bottom: -100px; opacity: 0; transform: translateX(0) rotate(0deg); } 5% { opacity: 0.9; } 50% { opacity: 0.9; } 100% { bottom: 110vh; opacity: 0; transform: translateX(50px) rotate(15deg); } }
+
+        .footer { position: static; margin-top: 30px; font-size: 0.8rem; color: #72887d; z-index: 10; font-weight: 600; text-align: center; width: 100%; letter-spacing: 0.8px; }
+
+        /* ========= تهيئة الموبايل الحالية ========= */
+        @media (max-width: 600px) {
+            body { padding: 15px 10px; }
+            .card { padding: 35px 20px; border-radius: 20px; }
+            h1 { font-size: 1.85rem; }
+            p.subtitle { font-size: 0.85rem; margin-bottom: 25px; }
+            input[type="text"] { padding: 14px 16px; font-size: 0.92rem; border-radius: 12px; }
+            .upload-label { padding: 25px; border-radius: 12px; }
+            .upload-label .camera-icon { width: 30px; height: 30px; }
+            .upload-label span { font-size: 0.8rem; }
+            .btn-generate { padding: 14px; font-size: 0.95rem; border-radius: 12px; }
+            
+            .capture-area { padding: 45px 22px; min-height: 420px; width: 100%; max-width: 385px; border-radius: 20px; }
+            .capture-area::before { top: 10px; left: 10px; right: 10px; bottom: 10px; border-radius: 14px; }
+            
+            /* تم إزالة المسافات بين الحروف لتفادي تقطع النص العربي في الموبايل */
+            .sp-quote { font-size: 0.84rem !important; white-space: nowrap !important; }
+            
+            .card-corner { width: 22px; height: 22px; }
+            .card-corner.top-left { top: 16px; left: 16px; }
+            .card-corner.top-right { top: 16px; right: 16px; }
+            .card-corner.bottom-left { bottom: 16px; left: 16px; }
+            .card-corner.bottom-right { bottom: 16px; right: 16px; }
+            
+            .photo-holder { width: 95px; height: 95px; margin-bottom: 20px; }
+            .res-title { font-size: 1.75rem; margin-bottom: 12px; }
+            .res-msg { font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px; }
+            .sender-tag { font-size: 0.9rem; margin-top: 10px; padding-top: 10px; }
+            
+            .actions { gap: 10px; width: 100%; max-width: 385px; }
+            .btn-action { padding: 13px; font-size: 0.9rem; border-radius: 12px; }
+            .svg-icon { width: 16px; height: 16px; }
+            .footer { font-size: 0.72rem; }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div id="toast"></div>
+<div id="balloons-container"></div>
+<div class="container">
+    
+    <div id="setup-view" class="card">
+        <h1>عيد مبارك 🌙</h1>
+        <p class="subtitle">صمم بطاقتك لك أو لمن تحب</p>
+        <div class="input-group">
+            <label>اسم المُرسل إليه</label>
+            <input type="text" id="recipient-name" placeholder="أدخل اسم الشخص الموجه له البطاقة">
+        </div>
+        <div class="input-group">
+            <label>اسم المُرسل (اختياري)</label>
+            <input type="text" id="sender-name" placeholder="أدخل اسمك الكريم هنا">
+        </div>
+        <div class="photo-upload">
+            <label for="photo-input" class="upload-label" id="drop-zone">
+                <svg class="camera-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 17C14.2091 17 16 15.2091 16 13C16 10.7909 14.2091 9 12 9C9.79086 9 8 10.7909 8 13C8 15.2091 9.79086 17 12 17Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 3H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>إدراج صورة شخصية داخل الإطار الملكي</span>
+            </label>
+            <input type="file" id="photo-input" accept="image/*">
+            <div class="preview-container" id="preview-container">
+                <img id="photo-preview" src="" alt="Preview">
+                <button class="remove-photo" onclick="removePhoto()">✕</button>
+            </div>
+        </div>
+        <button class="btn-generate" onclick="generateCard()">إنشاء البطاقة</button>
+    </div>
+
+    <div id="result-view">
+        <div class="result-card" id="result-card-wrapper">
+            <div class="capture-area" id="capture-area">
+                <div class="card-corner top-left"></div>
+                <div class="card-corner top-right"></div>
+                <div class="card-corner bottom-left"></div>
+                <div class="card-corner bottom-right"></div>
+                <div class="photo-holder" id="photo-holder">
+                    <img id="final-photo" src="" alt="">
+                </div>
+                <h2 class="res-title" id="res-title"></h2>
+                <p class="res-msg" id="res-msg"></p>
+                <p class="sender-tag" id="sender-tag"></p>
+                <div id="special-section" class="hidden">
+                    <p class="sp-quote" id="sp-quote"></p>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="btn-action btn-download" id="btn-download" onclick="downloadImage()">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3V16M12 16L16 11.7143M12 16L8 11.7143" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M19 19H5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+                حفظ بجودة عالية
+            </button>
+            <button class="btn-action btn-reset" onclick="resetApp()">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12C20 16.4183 16.4183 20 12 20C9.3049 20 6.92134 18.6641 5.5 16.625" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                    <path d="M8.5 16.5H5.5V19.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                تصميم جديد
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="footer" id="footer"></div>
+
+<script>
+(function(){
+    var _A=function(v){return v};
+    var _K1=_A([79,114,97,110,103,101,66,108,111,115,115,111,109,35,57,33,90,113,76,56,100,86,110,84,107,80,119,89,109,70,104,82,98,71,74,115,69,117,67,88,65,77,87,68,122,73,108,78,101,83,111,116,75,99,112,121]);
+    var _K2=_A([145,60,167,95,226,24,107,212,15,131,42,118,201,69,254,18,88,179,125,36,158,97,218,7,76,151,232,51,127,202,22,91,160,78,243,40,133,209,108,57,142,196,114,31,100,171,87,13,184,67,239,44,121,58,150,225]);
+    var _D=_A([
+        "FN45tIUrJ3n+rMwbfye8YTBmdFG8XTs5P9vzfG+EhZQIgVvaIjAO5Ds4OL3ygwu5YfnDXosA6M/pMiGSs11XXoUeW3Vlx97oiyfO35oWbak7k5IUI5+3lQ==",
+        "EwE624UpQJ4edSYbbK6NLFf/nFbrj7Q5RqI=",
+        "FNoBCinVup8rdD0ajybiiVfpcyy8VDs4WdvzfIyEhnAHmlz06Yye16N9tb30guDwu6IZ6IsB1c4IMhGStw==",
+        "O+Vvyg=="
+    ]);
+    var _H="5c6409b06ee9ec83cad3dfc4aa75d12779339b819b421700bfaff74467b2f94f";
+
+    function _l3d(b){
+        var o=new Uint8Array(b.length);
+        for(var i=0;i<b.length;i++) o[i]=(b[i]-(i*7+13)+2560)&0xFF;
+        return o;
+    }
+    function _dec(b64){
+        var bin=atob(b64);
+        var buf=new Uint8Array(bin.length);
+        for(var i=0;i<bin.length;i++) buf[i]=bin.charCodeAt(i);
+        var t2=_l3d(buf);
+        var t1=new Uint8Array(t2.length);
+        for(var i=0;i<t2.length;i++) t1[i]=t2[i]^_K2[i%_K2.length];
+        var out=new Uint8Array(t1.length);
+        for(var i=0;i<t1.length;i++) out[i]=t1[i]^_K1[i%_K1.length];
+        return new TextDecoder().decode(out);
+    }
+    function _gp(i){ return _dec(_D[i]); }
+    async function _h256(t){
+        var d=(new TextEncoder()).encode(t);
+        var h=await crypto.subtle.digest("SHA-256",d);
+        return Array.from(new Uint8Array(h)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
+    }
+    async function isSpecial(n){
+        if(!n) return false;
+        var h=await _h256(n.trim());
+        return h===_H;
+    }
+
+    var state={photo:null,name:''};
+    var _tt=null;
+
+    function showToast(msg,dur){
+        dur=dur||2800;
+        var t=document.getElementById('toast');
+        t.innerHTML='<span class="toast-star">✦</span> '+msg;
+        t.classList.add('show');
+        if(_tt) clearTimeout(_tt);
+        _tt=setTimeout(function(){t.classList.remove('show');},dur);
+    }
+
+    var _pi=document.getElementById('photo-input');
+    var _dz=document.getElementById('drop-zone');
+    _pi.addEventListener('change',function(e){handleFiles(e.target.files);});
+    ['dragenter','dragover','dragleave','drop'].forEach(function(n){
+        _dz.addEventListener(n,function(e){e.preventDefault();e.stopPropagation();});
+    });
+    _dz.addEventListener('dragover',function(){_dz.style.borderColor='#c5a059';});
+    _dz.addEventListener('dragleave',function(){_dz.style.borderColor='#b8c7bf';});
+    _dz.addEventListener('drop',function(e){_dz.style.borderColor='#b8c7bf';handleFiles(e.dataTransfer.files);});
+
+    function handleFiles(files){
+        var f=files[0];
+        if(!f) return;
+        if(!['image/jpeg','image/png','image/webp','image/gif'].includes(f.type)){showToast('امتداد الملف غير مدعوم');return;}
+        if(f.size>5*1024*1024){showToast('الحد الأقصى لحجم الصورة 5 ميجابايت');return;}
+        var r=new FileReader();
+        r.onload=function(e){
+            state.photo=e.target.result;
+            document.getElementById('photo-preview').src=state.photo;
+            document.getElementById('preview-container').style.display='block';
+            _dz.style.display='none';
+        };
+        r.readAsDataURL(f);
+    }
+
+    window.removePhoto=function(){
+        state.photo=null;
+        document.getElementById('photo-preview').src='';
+        document.getElementById('preview-container').style.display='none';
+        _dz.style.display='flex';
+        _pi.value='';
+    };
+
+    async function _tw(el,txt,spd){
+        spd=spd||40; el.innerHTML='';
+        for(var i=0;i<txt.length;i++){
+            el.innerHTML+=txt[i];
+            await new Promise(function(r){setTimeout(r,spd);});
+        }
+    }
+
+    function createBalloons(){
+        var c=document.getElementById('balloons-container');
+        var cols=['#6d8477','#0f3428','#1b4d3e','#a3b5ab','#c5a059','#967333'];
+        for(var i=0;i<8;i++){
+            var b=document.createElement('div');
+            b.className='balloon';
+            b.style.backgroundColor=cols[Math.floor(Math.random()*cols.length)];
+            b.style.left=Math.random()*100+'%';
+            b.style.animationDelay=Math.random()*0.4+'s';
+            c.appendChild(b);
+            (function(x){setTimeout(function(){x.remove();},4800);})(b);
+        }
+    }
+
+    window.generateCard=async function(){
+        var ni=document.getElementById('recipient-name');
+        var si=document.getElementById('sender-name');
+        var name=ni.value.trim();
+        var sender=si.value.trim();
+        if(!name){showToast('يرجى إدخل اسم المرسل إليه');ni.focus();return;}
+        state.name=name;
+        var ttxt='عيد سعيد يا '+name;
+        var mtxt='كل عام وأنت بخير، أعاده الله عليك وعلى أحبابك بالخير واليمن والبركات. تقبل الله منا ومنكم صالح الأعمال.';
+        var te=document.getElementById('res-title');
+        var me=document.getElementById('res-msg');
+        var sq=document.getElementById('sp-quote');
+        te.innerHTML=''; me.innerHTML=''; sq.innerHTML='';
+        document.getElementById('setup-view').style.display='none';
+        document.getElementById('result-view').style.display='block';
+        createBalloons();
+        await _tw(te,ttxt,50);
+        await _tw(me,mtxt,25);
+        if(sender){
+            document.getElementById('sender-tag').innerText='من: '+sender;
+            document.getElementById('sender-tag').classList.remove('hidden');
+        } else {
+            document.getElementById('sender-tag').classList.add('hidden');
+        }
+        var ph=document.getElementById('photo-holder');
+        if(state.photo){document.getElementById('final-photo').src=state.photo;ph.style.display='block';}
+        else{ph.style.display='none';}
+        var sp=await isSpecial(name);
+        var ss=document.getElementById('special-section');
+        
+        if(sp){
+            ss.classList.remove('hidden');
+            document.getElementById('res-title').style.color='#3a6073';
+            await _tw(sq,_gp(0),60);
+            sq.innerHTML+='<div class="sp-small" id="sl2"></div>';
+            await _tw(document.getElementById('sl2'),_gp(1),40);
+            sq.innerHTML+='<div class="sp-small" id="sl3"></div>';
+            var l3=document.getElementById('sl3');
+            await _tw(l3,_gp(2),40);
+            l3.innerHTML+='<span class="featured-heart">'+_gp(3)+'</span>';
+            sq.innerHTML+='<span class="sp-date first-date">12/2/2026</span><span class="sp-date">16/5/2026</span>';
+        } else {
+            ss.classList.add('hidden');
+            document.getElementById('res-title').style.color='var(--primary)';
+        }
+        setTimeout(function(){
+            confetti({particleCount:100,spread:60,origin:{y:0.95},colors:['#0f3428','#c5a059','#1b4d3e','#e3e8e3']});
+        },300);
+    };
+
+    window.resetApp=function(){
+        document.getElementById('recipient-name').value='';
+        document.getElementById('sender-name').value='';
+        window.removePhoto();
+        document.getElementById('result-view').style.display='none';
+        document.getElementById('setup-view').style.display='block';
+    };
+
+    async function ensureFontsLoaded() {
+        if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
+        }
+    }
+
+    window.downloadImage = async function() {
+        var btn = document.getElementById('btn-download');
+        var orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div> جاري التصدير...';
+
+        try {
+            await ensureFontsLoaded();
+            var targetElement = document.getElementById('result-card-wrapper');
+            var originalCaptureArea = document.getElementById('capture-area');
+
+            var canvas = await html2canvas(targetElement, {
+                scale: 3,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                onclone: function(clonedDoc) {
+                    var wrapper = clonedDoc.getElementById('result-card-wrapper');
+                    if (wrapper) {
+                        wrapper.style.padding = '30px';
+                        wrapper.style.boxShadow = 'none';
+                        wrapper.style.border = 'none';
+                        wrapper.style.borderRadius = '0';
+                        wrapper.style.margin = '0';
+                        wrapper.style.background = '#ffffff';
+                        wrapper.style.display = 'inline-block';
+                        wrapper.style.width = 'auto';
+                    }
+
+                    var el = clonedDoc.getElementById('capture-area');
+                    if (el && originalCaptureArea) {
+                        var exactHeight = originalCaptureArea.offsetHeight;
+                        var exactWidth = originalCaptureArea.offsetWidth;
+                        el.style.width = exactWidth + 'px';
+                        el.style.height = exactHeight + 'px';
+                        el.style.minHeight = exactHeight + 'px';
+                        el.style.maxWidth = exactWidth + 'px';
+
+                        el.style.transform = 'none';
+                        el.style.animation = 'none';
+                        el.style.boxShadow = 'none';
+                    }
+
+                    var photoHolder = clonedDoc.getElementById('photo-holder');
+                    if (photoHolder) {
+                        photoHolder.style.margin = '45px auto 90px auto';
+                        photoHolder.style.padding = '0px';
+                        photoHolder.style.border = '6px solid #ffffff';
+                        photoHolder.style.boxShadow = '0 0 0 2px #c5a059, 0 15px 35px rgba(15,52,40,0.15)';
+                        photoHolder.style.width = '165px';
+                        photoHolder.style.height = '165px';
+                    }
+
+                    var texts = clonedDoc.querySelectorAll('.sp-quote, .sender-tag, .res-msg, .res-title');
+                    for (var i = 0; i < texts.length; i++) {
+                        texts[i].style.letterSpacing = 'normal';
+                        texts[i].style.wordSpacing = 'normal';
+                    }
+                }
+            });
+
+            var link = document.createElement('a');
+            link.download = (state.name || 'بطاقة_معايدة_فاخرة') + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+        } catch(e) {
+            showToast('فشل التصدير، يرجى المحاولة لاحقاً');
+            console.error(e);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = orig;
+    };
+
+    window.addEventListener('load', function(){
+        document.getElementById('footer').innerText = 'Developed and Tested by M.Ali';
+        document.getElementById('recipient-name').value = '';
+        document.getElementById('sender-name').value = '';
+    });
+})();
+</script>
+</body>
+</html>
